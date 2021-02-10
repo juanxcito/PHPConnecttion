@@ -1,0 +1,44 @@
+function cnxBD(){
+	$servidor="hostingmysql.net";
+	$usuario="2685903_ruttax";
+	$contrasena="contrasena";
+	$base_datos="contrasena";
+
+	$conexion=mysqli_connect($servidor,$usuario,$contrasena,$base_datos) or trigger_error(mysql_error(),E_USER_ERROR);
+	return $conexion;
+}
+
+function execQuery($query,$cnx){
+	//echo $query."<br/>";
+	$resultado = mysqli_query($cnx,$query);
+	return $resultado;
+}
+//this return num Row and query result
+function execGetQuery($query,$cnx){
+	//echo $query."<br/>";
+	set_time_limit(60);
+	$resultado = mysqli_query($cnx,$query);
+	
+	$res[] = mysqli_num_rows($resultado);
+	$res[] = $resultado;
+	
+	return $res;
+}
+
+/*selecciona el valor del campo $field de la tabla $tab con el $id*/
+function getValueField($id,$tab,$field){
+	$cnx=cnxBD();
+	$query="SELECT ".$field." from `".strtolower($tab)."` where `".strtolower($tab)."`.ID_".strtoupper($tab)."='".$id."';";
+	//echo $query."<br/>";
+	$resultado_ad = execGetQuery($query,$cnx);
+
+	return mysqli_fetch_array($resultado_ad[1]);
+}
+
+function ultimoId($tab,$cnx){
+	$q="select `".$tab."`.ID_".strtoupper($tab)." from `".$tab."` order by `".$tab."`.ID_".strtoupper($tab)." desc;";
+	//echo $q."<br/>";
+	$dat=execGetQuery($q,$cnx);
+	$row=mysqli_fetch_array($dat[1]);
+	return $row["ID_".strtoupper($tab)];
+}
